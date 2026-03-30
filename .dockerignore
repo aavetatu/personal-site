@@ -1,10 +1,28 @@
-node_modules/
+# Git
 .git*
-Dockerfile
-docker-compose.yml
+
+# Dependencies
+node_modules/
+
+# Build outputs
 .next
+build/
+
+# Dev / local
 .vagrant
 Vagrantfile
+*.log
+*.tmp
+
+# Environment & secrets
 .env*
-.prettier*
+
+# Documentation
 *.md
+docs/
+LICENSE
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+
