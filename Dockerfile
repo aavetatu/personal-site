@@ -1,20 +1,26 @@
-#Newest node version as base image
-FROM node:24.7.0-alpine3.21 AS dev
+# Use node20 to build app for less resource usage
+FROM node:20-alpine AS builder
 
-#Set the working directory inside the container 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-#Copy dependencies
+# Copy dependencies
 COPY package*.json ./
 
-#Install dependencies
-RUN npm install
+# Install dependencies (requires 'package-lock.json', change to `npm install` in
+# case its missing)
+RUN npm ci
 
-#Copy the rest of the code
+# Copy the rest of the code and build app
 COPY . .
+RUN npm run build
 
-#Expose backend port
-EXPOSE 3000
 
-#Start the backend in development mode
-CMD ["npm", "run", "dev"]
+# Use nginx to serve static site
+FROM nginx:alpine AS runner
+
+# Copy built app to runner
+COPY --from=builder /app/out /usr/share/nginx/html
+
+# Serve app in port 80
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
